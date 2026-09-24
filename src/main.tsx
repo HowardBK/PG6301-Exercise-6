@@ -2,6 +2,7 @@ import React, { useEffect, useState, type SubmitEvent } from "react";
 import { createRoot } from "react-dom/client";
 
 interface TaskItem {
+  id: number;
   description: string;
   completed: boolean;
 }
@@ -15,14 +16,23 @@ function Application() {
     setTasks(await res.json());
   }
 
-  function handleSubmit(event: SubmitEvent) {
+  async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
-    fetch("api/tasks", {
+    await fetch("api/tasks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ description }),
+      body: JSON.stringify({ description, completed: false }),
     });
-    loadTasks();
+    await loadTasks();
+  }
+
+  async function handleCompleted(taskId: number, completed: boolean) {
+    await fetch(`/api/tasks/${taskId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed }),
+    });
+    await loadTasks();
   }
 
   useEffect(() => {
@@ -34,7 +44,14 @@ function Application() {
       <h1>My Task Manager</h1>
       <ul>
         {tasks.map((t) => (
-          <li>{t.description}</li>
+          <li>
+            <input
+              type="checkbox"
+              checked={t.completed}
+              onChange={(e) => handleCompleted(t.id, e.target.checked)}
+            />
+            {t.description}
+          </li>
         ))}
       </ul>
       <form onSubmit={handleSubmit}>
