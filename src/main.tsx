@@ -1,12 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
+interface TaskItem {
+  description: string;
+  completed: boolean;
+}
 function Application() {
-  const [tasks, setTasks] = useState([
-    { description: "Create project", completed: true },
-    { description: "Create React webapp", completed: false },
-    { description: "Create Hono backend", completed: false },
-  ]);
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+
+  async function loadTasks() {
+    const res = await fetch("/api/tasks");
+    setTasks(await res.json());
+  }
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
   return (
     <>
       <h1>My Task Manager</h1>
