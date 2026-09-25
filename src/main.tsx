@@ -44,7 +44,7 @@ function Application() {
       <h1>My Task Manager</h1>
       <ul>
         {tasks.map((t) => (
-          <li>
+          <li key={t.id}>
             <input
               type="checkbox"
               checked={t.completed}
@@ -70,8 +70,4 @@ function Application() {
   );
 }
 
-createRoot(document.getElementById("root")!).render(
-  <h1>
-    <Application />
-  </h1>,
-);
+createRoot(document.getElementById("root")!).render(<Application />);
